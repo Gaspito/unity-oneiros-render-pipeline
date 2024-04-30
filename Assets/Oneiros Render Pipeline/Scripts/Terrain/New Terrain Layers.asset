@@ -1,0 +1,25 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: dfc8bf76f118c5547a5b4a6194ba09e4, type: 3}
+  m_Name: New Terrain Layers
+  m_EditorClassIdentifier: 
+  resolution: 256
+  layers:
+  - albedo: {fileID: 2800000, guid: e20db367eb50e2044abc35c801ffa66f, type: 3}
+    normal: {fileID: 0}
+  - albedo: {fileID: 2800000, guid: accc97d271633ec47ae51977e09a2b4c, type: 3}
+    normal: {fileID: 0}
+  - albedo: {fileID: 2800000, guid: accc97d271633ec47ae51977e09a2b4c, type: 3}
+    normal: {fileID: 0}
+  - albedo: {fileID: 2800000, guid: accc97d271633ec47ae51977e09a2b4c, type: 3}
+    normal: {fileID: 0}
+  m_arrayAlbedo: {fileID: 0}

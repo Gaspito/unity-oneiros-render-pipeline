@@ -1,0 +1,64 @@
+﻿#pragma kernel CSDiffuse
+
+#define DIRECTIONAL_LIGHT 0
+#define POINT_LIGHT 1
+
+struct Light {
+	int type;
+	float3 position;
+	float3 direction;
+	float3 color;
+	float range;
+	float intensity;
+};
+
+int in_light_count = 0;
+StructuredBuffer<Light> in_lights;
+
+Texture2D<float4> albedoTarget;
+Texture2D<float4> positionTarget;
+Texture2D<float4> normalTarget;
+
+RWTexture2D<float4> out_diffuse;
+
+float SqrLength(float3 vect) {
+	return vect.x * vect.x + vect.y * vect.y + vect.z * vect.z;
+}
+
+[numthreads(1,1,1)]
+void CSDiffuse (uint3 id : SV_DispatchThreadID)
+{
+	float4 albedo = albedoTarget[id.xy];
+	float3 position = positionTarget[id.xy].xyz; 
+	float3 normal = normalTarget[id.xy].xyz;
+
+	normal = normalize(normal);
+
+	float3 diffuse = float3(0, 0, 0);
+
+	for (int lightId = 0; lightId < in_light_count; lightId++)
+	{
+		Light light = in_lights[lightId];
+
+		if (light.type == DIRECTIONAL_LIGHT) {
+			float3 ldir = normalize(light.direction);
+			float ndotl = dot(normal, -ldir);
+			if (ndotl <= 0.0) continue;
+			float atten = clamp(ndotl, 0.0, 1.0);
+			float3 lcolor = light.color * light.intensity;
+			diffuse += lcolor * atten * albedo.rgb;
+		}
+		else if (light.type == POINT_LIGHT) {
+			float3 ldir = position - light.position;
+			float range = 1.0 - clamp(SqrLength(ldir) / (light.range * light.range), 0.0, 1.0);
+			if (range <= 0.0) continue;
+			float ndotl = dot(normal, normalize(-ldir));
+			if (ndotl <= 0.0) continue;
+			float atten = clamp(ndotl, 0.0, 1.0) * range;
+			float3 lcolor = light.color * light.intensity;
+			diffuse += lcolor * atten * albedo.rgb;
+		}
+	}
+
+	out_diffuse[id.xy] = float4(diffuse, 1.0);
+}

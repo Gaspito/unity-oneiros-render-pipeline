@@ -1,0 +1,33 @@
+﻿// Each #kernel tells which function to compile; you can have many kernels
+#pragma kernel CSMain
+
+// This is the diffuse RT. it's dimensions are equal to the camera's width and height.
+RWTexture2D<float4> Result;
+
+// This is the current frame RT. it's dimensions are equal to half the camera's width and height.
+Texture2DMS<float4,2> Frame;
+
+// How far the process should be jittered to the right.
+int JitterOffset = 0;
+
+// This vector represents the width and height of the result texture, so as to not go beyond.
+float2 ResultSize;
+
+[numthreads(8,8,1)]
+void CSMain (uint3 id : SV_DispatchThreadID)
+{
+    int2 frameCoords = int2(id.x, id.y);
+    
+    frameCoords = clamp(frameCoords, float2(0, 0), ResultSize * 0.5);
+    
+    float4 frameColor = Frame.Load(frameCoords, 0);
+    
+    int2 resultCoords0 = int2(frameCoords.x * 2 + JitterOffset, frameCoords.y * 2);
+    int2 resultCoords1 = int2(resultCoords0.x + 1, resultCoords0.y + 1);
+    
+    resultCoords0 = clamp(resultCoords0, float2(0, 0), ResultSize);
+    resultCoords1 = clamp(resultCoords1, float2(0, 0), ResultSize);
+
+    Result[resultCoords0] = frameColor;
+    Result[resultCoords1] = frameColor;
+}

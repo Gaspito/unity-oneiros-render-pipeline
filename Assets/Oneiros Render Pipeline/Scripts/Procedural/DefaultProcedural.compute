@@ -1,0 +1,52 @@
+﻿// Each #kernel tells which function to compile; you can have many kernels
+#pragma kernel CSMain
+
+struct ComputeOutput
+{
+    float3 position;
+    float lifetime;
+};
+
+float4x4 _localToWorld;
+
+// Output buffer
+RWStructuredBuffer<ComputeOutput> _OutputBuffer;
+
+// Number of instances to draw
+uint _InstanceCount = 0;
+
+float _Time;
+
+#include "../../Shaders/Matrices.hlsl"
+
+// x * y * z = 64
+[numthreads(64,1,1)]
+void CSMain (uint3 id : SV_DispatchThreadID)
+{
+    uint bufferId = id.x;
+    
+    if (bufferId >= _InstanceCount)
+        return;
+    
+    ComputeOutput o = _OutputBuffer[bufferId];
+    float randomSeed = cos(bufferId * (1.0 / 3.14) * 17);
+    o.lifetime = (_Time - 0.1) * (1.0 / 7.0);
+    
+    float4 rotation = QuaternionFromEuler(float3(bufferId * 30, bufferId * 3, bufferId * 17));
+    float4x4 trsMatrix = RotationMatrix(rotation);
+    
+    float3 dir = mul(trsMatrix, float4(0, 1, 0, 0)).xyz;
+    
+    if (o.lifetime <= 0.0)
+    {
+        o.position = mul(_localToWorld, float4(0, 0, 0, 1)).xyz;
+    }
+    else
+    {
+        o.position += normalize(dir) * 0.01;
+    }
+    
+    o.lifetime = clamp(o.lifetime, 0.0, 1.0);
+    
+    _OutputBuffer[bufferId] = o;
+}

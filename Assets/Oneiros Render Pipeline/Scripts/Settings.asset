@@ -1,0 +1,20 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f15f8ad851fbbdd46bd02d0b92ba0f0b, type: 3}
+  m_Name: Settings
+  m_EditorClassIdentifier: 
+  shadowSettings:
+    directional:
+      maxDistance: 20
+      atlasSize: 256
+      cascadeCount: 2
+  cbrFrameReconstructShader: {fileID: 7200000, guid: 92a2a72f643cea04bb53125eb99c2f58, type: 3}
